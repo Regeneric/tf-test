@@ -56,6 +56,16 @@ variable "disk_size" {
     default = 32
 }
 
+variable "lvm_root_size" {
+    type = number
+    default = 0
+}
+
+variable "lvm_data_size" {
+    type = number
+    default = 0
+}
+
 
 # Variable Definitions
 # Shared storage
@@ -107,6 +117,24 @@ resource "proxmox_virtual_environment_vm" "semaphore-dev-vm" {
 		vm_id        = var.tmpl_id
 		full         = true
 	}
+
+    dynamic "disk" {
+        for_each = var.lvm_root_size > 0 ? [ for i in range(0, 1) : i ] : []
+        content {
+            datastore_id = "cephrbd"
+            size = var.lvm_root_size
+            interface = "scsi0"
+        }
+    }
+
+    dynamic "disk" {
+        for_each = var.lvm_data_size > 0 ? [ for i in range(0, 1) : i ] : []
+        content {
+            datastore_id = "cephrbd"
+            size = var.lvm_data_size
+            interface = "scsi1"
+        }
+    }
 
 	disk {
 		datastore_id 	  = "cephrbd"
