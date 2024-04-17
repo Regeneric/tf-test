@@ -9,7 +9,6 @@ terraform {
 	}
 }
 
-
 provider "proxmox" {
 endpoint  = "https://10.103.11.1:8006/api2/json"
 	api_token = "hbatkiewicz@pve!test=c2111043-95cc-42f9-8bc2-2916319faacd"
@@ -47,6 +46,16 @@ variable "vm_count" {
     default = "1"
 }
 
+variable "disk_count" {
+    type = number
+    default = 0
+}
+
+variable "disk_size" {
+    type = string
+    default = "32G"
+}
+
 resource "proxmox_virtual_environment_vm" "dev-vm" {
 	vm_id = var.vm_id
 	name  = var.vm_name
@@ -68,6 +77,15 @@ resource "proxmox_virtual_environment_vm" "dev-vm" {
 		vm_id        = var.tmpl_id
 		full         = true
 	}
+
+    dynamic "disk" {
+        for_each = [ for i in range(0, var.disk_count) : i ]
+        content {
+            datastore_id = "cephrbd"
+            size = var.disk_size
+            interface = "scsi${disk.value+2}"
+        }
+    }
 
 	# Cloud-init
 	initialization {
