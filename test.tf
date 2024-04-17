@@ -64,10 +64,10 @@ variable "user_drives" {
   description = "Every user has one shared drive mapped to him"
 
   default = {
-    user0 = "vm-404-disk-1"
-    user1 = "vm-404-disk-2"
-    user2 = "vm-404-disk-3"
-    user3 = "vm-404-disk-4"
+    hbatkiewicz  = "vm-404-disk-1"
+    mkasinski    = "vm-404-disk-2"
+    wszczepanski = "vm-404-disk-3"
+    nmiazek      = "vm-404-disk-4"
   }
 }
 
