@@ -21,8 +21,10 @@ endpoint  = "https://10.103.11.1:8006/api2/json"
 }
 
 
+
+
 resource "proxmox_virtual_environment_vm" "dev-vm" {
-	vm_id = "444"
+	vm_id = var.vm_id
 	name  = "hb-test-semaphore"
 	tags  = ["terraform", "dev", "semaphore"]
 	bios  = "ovmf"
