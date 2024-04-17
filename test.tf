@@ -56,7 +56,37 @@ variable "disk_size" {
     default = 32
 }
 
-resource "proxmox_virtual_environment_vm" "dev-vm" {
+
+# Variable Definitions
+# Shared storage
+variable "user_drives" {
+  type = map(string)
+  description = "Every user has one shared drive mapped to him"
+
+  default = {
+    user0 = "vm-404-disk-1"
+    user1 = "vm-404-disk-2"
+    user2 = "vm-404-disk-3"
+    user3 = "vm-404-disk-4"
+  }
+}
+
+variable "nodes" {
+  type = map(string)
+
+  default = {
+    dev-worker-1 = "10.103.11.1"
+    dev-worker-2 = "10.103.11.2"
+    dev-worker-3 = "10.103.11.3"
+  }
+}
+
+variable "user_name" {
+    type = string
+}
+
+
+resource "proxmox_virtual_environment_vm" "semaphore-dev-vm" {
 	vm_id = var.vm_id
 	name  = var.vm_name
     count = var.vm_count
@@ -78,12 +108,19 @@ resource "proxmox_virtual_environment_vm" "dev-vm" {
 		full         = true
 	}
 
+	disk {
+		datastore_id 	  = "cephrbd"
+		path_in_datastore = var.user_drives["${var.user_name}"]
+		interface 		  = "scsi2"
+		file_format		  = "raw"
+	}
+
     dynamic "disk" {
         for_each = [ for i in range(0, var.disk_count) : i ]
         content {
             datastore_id = "cephrbd"
             size = var.disk_size
-            interface = "scsi${disk.value+2}"
+            interface = "scsi${disk.value+3}"
         }
     }
 
@@ -94,8 +131,6 @@ resource "proxmox_virtual_environment_vm" "dev-vm" {
 		ip_config {
 			ipv4 {
 				address = "dhcp"
-        		# address = "10.103.52.59/20"
-				# gateway = "10.103.48.1"
 			}
     	}
 	}
