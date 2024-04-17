@@ -52,8 +52,8 @@ variable "disk_count" {
 }
 
 variable "disk_size" {
-    type = string
-    default = "32G"
+    type = number
+    default = 32
 }
 
 resource "proxmox_virtual_environment_vm" "dev-vm" {
