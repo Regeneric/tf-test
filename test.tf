@@ -22,6 +22,10 @@ endpoint  = "https://10.103.11.1:8006/api2/json"
 
 
 
+variable "vm_id" {
+    type = string
+    default = "999"
+}
 
 resource "proxmox_virtual_environment_vm" "dev-vm" {
 	vm_id = var.vm_id
